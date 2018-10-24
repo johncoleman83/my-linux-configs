@@ -129,6 +129,15 @@ function git () {
         else
             command git push origin master
         fi
+    elif [[ "$@" == "push --force origin master" || "$@" == "push -f origin master" ]]; then
+        read -p "you want to make things burn ? " -n 1 -r YES_MAKE_IT_BURN
+        echo ""
+        if [[ ! "$YES_MAKE_IT_BURN" =~ ^[Yy]$ ]]; then
+            echo "saved you this time..."
+            [[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1
+        else
+            command git push --force origin master
+        fi
     else
         command git "$@"
     fi
