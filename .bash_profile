@@ -4,11 +4,17 @@
 #
 
 # PATH RUBY
-export PATH="$(brew --prefix qt@5.5)/bin:$PATH"
-export PATH="$PATH:/usr/bin/gem"
+export PATH="$PATH:$HOME/.gem/ruby/2.6.0/bin"
+
 export PATH="/usr/local/sbin:$PATH"
 #export PATH="$PATH:/Users/jcoleman/jcolemanbin"
 #moved new instals to /opt with symlink in /usr/local/bin
+
+# pd-ssh Bash Autocomplete
+if [ -f $(brew --prefix)/etc/bash_completion ]; then
+    . $(brew --prefix)/etc/bash_completion
+fi
+
 
 #   Add Color
 #   -----------------------------------------------------------
@@ -111,6 +117,8 @@ alias fix_stty='stty sane'                  # fix_stty:     Restore terminal set
 alias cic='set completion-ignore-case On'   # cic:          Make tab-completion case-insensitive
 alias DT='tee ~/Desktop/terminalOut.txt'    # DT:           Pipe content to file on MacOS Desktop
 alias emacs='emacs --no-window-system'      # open emacs in terminal instead of GUI
+alias aws-es-proxy='aws-es-proxy-0.9-mac-amd64' 
+
 
 #   lr:  Full Recursive Directory Listing
 #   ------------------------------------------
@@ -163,9 +171,15 @@ function docker () {
     if [[ "$@" == "ps -a" ]]; then
         command docker ps --all --format "{{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Ports}}\t{{.Status}}" \
             | (echo -e "CONTAINER_ID\tNAMES\tIMAGE\tPORTS\tSTATUS" && cat) \
-            | awk '{printf "\033[1;32m%s\t\033[01;38;5;95;38;5;196m%s\t\033[00m\033[1;34m%s\t\033[01;90m%s %s %s %s %s %s %s\033[00m\n", $1, $2, $3, $4, $5, $6, $7, $8, $9, $10;}' \
+            | awk '{printf "\033[1;32m%s\t\033[01;38;5;95;38;5;196m\%s\t\033[00m\033[1;34m%s\t\033[01;90m%s %s %s %s %s %s %s\033[00m\n", $1, $2, $3, $4, $5, $6, $7, $8, $9, $10;}' \
             | column -s$'\t' -t \
-	    | awk 'NR<2{print $0;next}{print $0 | "sort --key=2"}'
+            | awk 'NR<2{print $0;next}{print $0 | "sort --key=2"}'
+    elif [[ "$@" == "ps" ]]; then
+        command docker ps --format "{{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Ports}}\t{{.Status}}" \
+            | (echo -e "CONTAINER_ID\tNAMES\tIMAGE\tPORTS\tSTATUS" && cat) \
+            | awk '{printf "\033[1;32m%s\t\033[01;38;5;95;38;5;196m\%s\t\033[00m\033[1;34m%s\t\033[01;90m%s %s %s %s %s %s %s\033[00m\n", $1, $2, $3, $4, $5, $6, $7, $8, $9, $10;}' \
+            | column -s$'\t' -t \
+            | awk 'NR<2{print $0;next}{print $0 | "sort --key=2"}'
     else
         command docker "$@"
     fi
@@ -175,9 +189,9 @@ function docker () {
 #   mans:   Search manpage given in agument '1' for term given in argument '2' (case insensitive)
 #           displays paginated result with colored search terms and two lines surrounding each hit.            Example: mans mplayer codec
 #   --------------------------------------------------------------------
-mans () {
-    man $1 | grep -iC2 --color=always $2 | less
-}
+# man () {
+#    command man $1 | grep -iC2 --color=always $2 | less
+# }
 
 #   spotlight: Search for a file using MacOS Spotlight's metadata
 #   -----------------------------------------------------------
@@ -229,10 +243,6 @@ if [ -f $(brew --prefix)/etc/bash_completion ]; then
     . $(brew --prefix)/etc/bash_completion
 fi
 
-# asdf
-. $HOME/.asdf/asdf.sh
-. $HOME/.asdf/completions/asdf.bash
-
 # golang
 export GOPATH=$HOME/go
 export PATH=$PATH:$GOPATH/bin
@@ -240,8 +250,21 @@ export PATH=$PATH:/usr/local/go/bin
 ulimit -n 8096
 
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
-export PATH="$PATH:$HOME/.rvm/bin"
+# export PATH="$PATH:$HOME/.rvm/bin"
 
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
+# [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
 
-export SBT_CREDENTIALS=$HOME/.sbt/credentials
+# export SBT_CREDENTIALS=$HOME/.sbt/credentials
+# export SSL_CERT_FILE="/usr/local/etc/openssl/cert.pem"
+# export SBT_CREDENTIALS=$HOME/.sbt/credentials
+
+
+# Load nodenv automatically by appending
+# the following to ~/.bash_profile:
+
+eval "$(nodenv init -)"
+
+# asdf
+export ASDF_DIR=$(brew --prefix asdf)
+. $(brew --prefix asdf)/asdf.sh
+. $(brew --prefix asdf)/etc/bash_completion.d/asdf.bash
