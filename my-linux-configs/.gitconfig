@@ -1,13 +1,22 @@
 [url "git@github.com:"]
 	insteadOf = https://github.com/
+#[url "https://github.com/"]
+#	insteadOf = git@github.com:
+
+
 [user]
-	name = John Coleman
-        #name = John Coleman and Travis Herrick
+	name = David John Coleman II
 	email = jcoleman@pagerduty.com
+	signingkey = EC6A8A4BF9A6C7F1C0EC683D0EC0970D92361EC8
 [core]
 	editor = emacs
 [format]
         pretty = format:%C(yellow)%h%Creset | %C(cyan)%cr%Creset | %s %C(yellow)%d %Cred[%an]
 [alias]
-        conflict = !git info `cat .git/HEAD` && git info `cat .git/rebase-apply/original-commit`
-        newbranch = "!newbranch() { git checkout master && git fetch origin master && git reset --hard origin/master && git checkout -b \"$1\"; }; newbranch"
+        prepare = "!git checkout master && git fetch origin master && git reset --hard origin/master;"
+        newbranch = "!newbranch() { git prepare && git checkout -b \"$1\"; }; newbranch";
+        cleanbranches = "!git prepare && git branch | grep --invert-match master | xargs git branch -D;"
+	thisbranch = "!thisbranch() { git branch | grep \\* | cut -d \" \" -f2; }; thisbranch"
+	prepare-this = "!tmp_branch=$(git thisbranch); git fetch origin $tmp_branch && git reset --hard origin/$tmp_branch"
+[commit]
+	gpgsign = true
